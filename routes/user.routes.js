@@ -1,13 +1,20 @@
 import express from 'express'
-import db from '../db';
-import userTable from '../models';
+import db from '../db/index.js';
+import userTable from '../models/index.js';
 import { eq } from 'drizzle-orm';
 import { randomBytes, createHmac } from 'crypto';
+import { signupPostRequestBodySchema } from '../validation/request.validation.js';
 
-const router = express.Router();
+const userRouter = express.Router();
 
-router.post('/signup', async(req, res) => {
-    const { firstName, lastName, email, password } = req.body;
+userRouter.post('/signup', async(req, res) => {
+    const validationResult = await signupPostRequestBodySchema.safeParseAsync(req.body);
+
+    if(validationResult.error) {
+        return res.status(400).json({ error: validationResult.error.format() })
+    }
+
+    const { firstName, lastName, email, password } = validationResult.data;
 
     const [existingUser] = await db
     .select({
@@ -33,4 +40,4 @@ router.post('/signup', async(req, res) => {
 })
 
 
-export default router;
+export default userRouter;
