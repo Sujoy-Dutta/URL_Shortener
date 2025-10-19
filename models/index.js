@@ -1,3 +1,2 @@
-import {userTable} from './user.model.js';
-
-export default userTable;
+export { urlsTable } from './url.model.js';
+export {userTable} from './user.model.js';
